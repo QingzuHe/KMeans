@@ -1,8 +1,10 @@
 # KMeans
 * Single-threaded KMeans based on C++11.
-* KMeans++ initialization. 
+* KMeans++ and random initialization. 
 * Only include single-header file.
+* Euclidean distance.
 
+```c++
 #include <ctime>
 #include <cstring>
 
@@ -24,3 +26,4 @@ int main()
 	
 	return 0;
 }
+```
