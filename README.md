@@ -29,4 +29,4 @@ int main()
 ```
 
 ## Comparison with sklearn
-![](https://github.com/QingzuHe/KMeans/raw/master/results/ResultsOfComparison.png)  
+![](https://github.com/QingzuHe/KMeans/raw/master/results/ResultsOfComparison.png)
