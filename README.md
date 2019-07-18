@@ -4,6 +4,19 @@
 * Only include single-header file.
 * Euclidean distance.
 
+## Usage
+### Modification
+Before you put "kmeans.h" to your project, you need modify 11th line in this file.
+```c++
+#define N_FEATURES 2
+```
+N_FEATURES means the number of features. For example, you have 100 samples and each sample includes 2 dimensions, so N_FEATURES=2. We define this parameter for accelerate computation.
+
+### Make
+```shell
+g++ -O3 -std=c++11 -o kmeans main.cpp
+```
+
 ## Example
 ```c++
 #include <ctime>
