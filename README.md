@@ -42,7 +42,7 @@ int main()
 ```
 
 ## In the future
-We will try to implement multi-threads KMeans algorithm in CPU. However, we will use thread-safe queue to replace "omp.h". 
+We will try to use thread-safe queue to implement multi-threads KMeans algorithm in CPU.
 
 ## Comparison with sklearn.cluster.KMeans(popular python packge)
 ![image](https://github.com/QingzuHe/KMeans/raw/master/results/ResultsOfComparison.jpg)
