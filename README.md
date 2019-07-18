@@ -24,7 +24,9 @@ int main()
 	
 	labels = kmeans.fit_predict(features, n_clusters, init_method);
 	
-	
 	return 0;
 }
 ```
+
+## Comparison with sklearn
+![](https://github.com/guodongxiaren/ImageCache/raw/master/Logo/foryou.gif)  
