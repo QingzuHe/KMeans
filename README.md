@@ -30,3 +30,4 @@ int main()
 
 ## Comparison with sklearn
 ![image](https://github.com/QingzuHe/KMeans/raw/master/results/ResultsOfComparison.jpg)
+
