@@ -4,7 +4,7 @@
 * Only include single-header file.
 * Euclidean distance.
 
-##Example
+## Example
 ```c++
 #include <ctime>
 #include <cstring>
