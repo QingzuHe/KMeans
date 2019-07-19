@@ -18,6 +18,7 @@ g++ -O3 -std=c++11 -o kmeans main.cpp
 ```
 
 ## Example
+
 ```c++
 #include <ctime>
 #include <cstring>
