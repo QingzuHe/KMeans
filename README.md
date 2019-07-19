@@ -27,16 +27,16 @@ g++ -O3 -std=c++11 -o kmeans main.cpp
 int main()
 {
 	srand((unsigned)time(NULL));
-	
+
 	KMeans kmeans;
-	
+
 	int n_clusters = 3; // the number of cluster centers
 	std::vector<int> labels; // cluster labels
 	std::string init_method = "kmeans++"; // support "kmeans++" and "random" initialization.
 	std::vector< std::vector<float> > features; // 2D matrix, [n_samples, n_features]
-	
+
 	labels = kmeans.fit_predict(features, n_clusters, init_method);
-	
+
 	return 0;
 }
 ```
