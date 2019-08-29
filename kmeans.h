@@ -8,13 +8,19 @@
 #define MAX_ITER 200
 #define FLT_MAX 3.402823466e+38F 
 
+#define N_INIT 10
 #define N_FEATURES 2
+
+typedef struct 
+{
+	int group = 0; 
+	float clu_dist;
+	float data[N_FEATURES];
+} Point;
 
 class KMeans
 {
 	private:
-		
-		typedef struct {int group = 0; float data[N_FEATURES];} Point;
 		
 		float distance(Point &x, Point &y);
 		
@@ -142,73 +148,96 @@ std::vector<int> KMeans::fit_predict(std::vector< std::vector<float> > &features
 	
 	std::vector<Point> cluster_centers(n_clusters);
 	
-	if (init_method == "kmeans++")
-	{
-		kpp(pts, n_samples, cluster_centers, n_clusters);
-	}
-	else if (init_method == "random")
-	{
-		random(pts, n_samples, cluster_centers, n_clusters);
-	}
-	else
-	{
-		printf("Only support kmeans++ and random initial methods! Please choose one of them.");
-		exit(0);
-	}
-	
+	int iter;
 	int changed;
+	float inertia;
+	float best_inertia = FLT_MAX;
 	int stop_msg = n_samples >> 10; //0.1% of n_samples
 	
-	int iter = 0;
+	float* clu_dist = (float*)malloc(sizeof(float) * 1);
 	
-	do
+	for (int n = 0; n < N_INIT; ++n)
 	{
-		++iter;
-		
-		for (int i = 0; i < n_clusters; ++i)
+		if (init_method == "kmeans++" || init_method == "kmeanspp")
 		{
-			memcpy(cluster_centers[i].data, zeros, N_FEATURES * sizeof(float));
-			cluster_centers[i].group = 0;
+			kpp(pts, n_samples, cluster_centers, n_clusters);
 		}
+		else if (init_method == "random")
+		{
+			random(pts, n_samples, cluster_centers, n_clusters);
+		}
+		else
+		{
+			printf("Only support kmeans++ and random initial methods! Please choose one of them.");
+			exit(0);
+		}
+		
+		iter = 0;
+		
+		do
+		{
+			++iter;
+			
+			for (int i = 0; i < n_clusters; ++i)
+			{
+				memcpy(cluster_centers[i].data, zeros, N_FEATURES * sizeof(float));
+				cluster_centers[i].group = 0;
+			}
+			
+			for (int i = 0; i < n_samples; ++i)
+			{
+				++cluster_centers[pts[i].group].group;
+				
+				for (int j = 0; j < N_FEATURES; ++j)
+				{
+					cluster_centers[pts[i].group].data[j] += pts[i].data[j];
+				}
+			}
+			
+			for (int i = 0; i < n_clusters; ++i)
+			{
+				if (cluster_centers[i].group == 0) continue;
+				
+				for (int j = 0; j < N_FEATURES; ++j)
+				{
+					cluster_centers[i].data[j] /= (float)cluster_centers[i].group;
+				}
+			}
+			
+			changed = 0;
+			
+			for (int i = 0; i < n_samples; ++i)
+			{
+				int min_idx = nearest(pts[i], cluster_centers, n_clusters, clu_dist);
+				if (min_idx != pts[i].group)
+				{
+					++changed;
+					pts[i].group = min_idx;
+					pts[i].clu_dist = clu_dist[0];
+				}
+			}
+			
+		} while (changed > stop_msg && iter <= MAX_ITER);
+		
+		inertia = 0.0f;
 		
 		for (int i = 0; i < n_samples; ++i)
 		{
-			++cluster_centers[pts[i].group].group;
-			
-			for (int j = 0; j < N_FEATURES; ++j)
-			{
-				cluster_centers[pts[i].group].data[j] += pts[i].data[j];
-			}
+			inertia += pts[i].clu_dist;
 		}
 		
-		for (int i = 0; i < n_clusters; ++i)
+		if (inertia < best_inertia)
 		{
-			if (cluster_centers[i].group == 0) continue;
+			for (int i = 0; i < n_samples; ++i)
+			{
+				labels[i] = pts[i].group;
+			}
 			
-			for (int j = 0; j < N_FEATURES; ++j)
-			{
-				cluster_centers[i].data[j] /= (float)cluster_centers[i].group;
-			}
+			best_inertia = inertia;
 		}
-		
-		changed = 0;
-		
-		for (int i = 0; i < n_samples; ++i)
-		{
-			int min_idx = nearest(pts[i], cluster_centers, n_clusters, 0);
-			if (min_idx != pts[i].group)
-			{
-				++changed;
-				pts[i].group = min_idx;
-			}
-		}
-		
-	} while (changed > stop_msg && iter <= MAX_ITER);
-	
-	for (int i = 0; i < n_samples; ++i)
-	{
-		labels[i] = pts[i].group;
 	}
+	
+	free(clu_dist);
 	
 	return labels;
 }
